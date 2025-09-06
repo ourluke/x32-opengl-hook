@@ -44,8 +44,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 BOOL WINAPI hkSwapBuffers(HDC hdc)
 {
-    //static bool s_init = false;
-
     if (static bool s_init = false; !s_init)
     {
         g_hWnd = WindowFromDC(hdc);
