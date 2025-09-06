@@ -23,7 +23,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     if (globals::menu)
     {
         if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-            return false;
+            return true;
 
         switch (msg)
         {
@@ -44,9 +44,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 BOOL WINAPI hkSwapBuffers(HDC hdc)
 {
-    static bool s_init = false;
+    //static bool s_init = false;
 
-    if (!s_init)
+    if (static bool s_init = false; !s_init)
     {
         g_hWnd = WindowFromDC(hdc);
         GUI::init(g_hWnd);
