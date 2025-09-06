@@ -3,31 +3,34 @@
 #include "hooks.h"
 #include "gui.h"
 
-void shutdown(HMODULE instance)
+void shutdown(HINSTANCE instance, FILE* f)
 {
     hooks::shutdownHooks();
     GUI::shutdown();
+
+    if (f)
+        fclose(f);
+
     FreeConsole();
     FreeLibraryAndExitThread(instance, 0);
 }
 
-DWORD WINAPI thread(HMODULE instance)
+DWORD WINAPI thread(LPVOID param)
 {
-    FILE* f;
+    FILE* f = nullptr;
 
     AllocConsole();
     freopen_s(&f, "CONOUT$", "w", stdout);
-    freopen_s(&f, "CONIN$", "r", stdin);
 
     if (!hooks::init())
-        shutdown(instance);
+        shutdown(static_cast<HINSTANCE>(param), f);
 
     while (!GetAsyncKeyState(VK_END))
     {
         Sleep(100);
     }
 
-    shutdown(instance);
+    shutdown(static_cast<HINSTANCE>(param), f);
     return 0;
 }
 
@@ -40,7 +43,7 @@ bool WINAPI DllMain(
     {
         DisableThreadLibraryCalls(instance);
 
-        HANDLE threadHandle = CreateThread(NULL, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(thread), instance, NULL, nullptr);
+        HANDLE threadHandle = CreateThread(NULL, NULL, thread, instance, NULL, nullptr);
 
         if (threadHandle)
             CloseHandle(threadHandle);
